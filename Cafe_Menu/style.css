@@ -2,6 +2,7 @@ body {
     background-image: url(https://cdn.freecodecamp.org/curriculum/css-cafe/beans.jpg);
     font-family: sans-serif;
     padding: 20px;
+    color: #654321; /* Added dark brown color for all text */
   }
   
   h1 {
@@ -10,7 +11,6 @@ body {
     margin-bottom: 15px;
     text-align: center;
     font-family: impact, serif;
-
   }
   
   h2 {
@@ -80,11 +80,11 @@ body {
   }
   
   a {
-    color: black;
+    color: #654321; /* Changed link color to dark brown */
   }
   
   a:visited {
-    color: black;
+    color: #654321; /* Changed visited link color to dark brown */
   }
   
   a:hover {
