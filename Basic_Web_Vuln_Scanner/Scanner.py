@@ -59,7 +59,23 @@ class WebSecurityScanner:
         if not self.scan_options['sql_injection']:
             return
             
-        sql_payloads = ["'", "1' OR '1'='1", "' OR 1=1--", "' UNION SELECT NULL--"]
+        sql_payloads = [
+            "'", 
+            "1' OR '1'='1", 
+            "' OR 1=1--", 
+            "' UNION SELECT NULL--",
+            "' OR 'a'='a",
+            "' OR '1'='1' --",
+            "' OR '1'='1' #",
+            "' OR 1=1; --",
+            "' OR 1=1; #",
+            "' OR '1'='1' UNION SELECT 1,2,3 --",
+            "' OR '1'='1' UNION SELECT NULL, NULL, NULL --",
+            "' OR '1'='1' UNION SELECT database(), user(), version() --",
+            "' OR '1'='1' AND SLEEP(5) --",
+            "' OR '1'='1' AND 1=CONVERT(int, (SELECT @@version)) --",
+        ]
+        
         for payload in sql_payloads:
             try:
                 parsed = urllib.parse.urlparse(url)
@@ -77,7 +93,21 @@ class WebSecurityScanner:
         if not self.scan_options['xss']:
             return
             
-        xss_payloads = ["<script>alert('XSS')</script>", "<img src=x onerror=alert('XSS')>", "javascript:alert('XSS')"]
+        xss_payloads = [
+            "<script>alert('XSS')</script>", 
+            "<img src=x onerror=alert('XSS')>", 
+            "javascript:alert('XSS')",
+            "<script>alert(document.cookie)</script>",
+            "<svg/onload=alert(1)>",
+            "<iframe src=javascript:alert(1)>",
+            "<body onload=alert(1)>",
+            "<a href=javascript:alert(1)>Click Me</a>",
+            "<div onmouseover=alert(1)>Hover Me</div>",
+            "<input type=text value='<script>alert(1)</script>'>",
+            "<marquee onstart=alert(1)>Scrolling Text</marquee>",
+            "<video><source onerror=alert(1)>",
+        ]
+        
         for payload in xss_payloads:
             try:
                 parsed = urllib.parse.urlparse(url)
@@ -99,8 +129,18 @@ class WebSecurityScanner:
             'email': r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}',
             'phone': r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b',
             'ssn': r'\b\d{3}-\d{2}-\d{4}\b',
-            'api_key': r'api[_-]?key[_-]?([\'"|`])([a-zA-Z0-9]{32,45})\1'
+            'api_key': r'api[_-]?key[_-]?([\'"|`])([a-zA-Z0-9]{32,45})\1',
+            'password': r'password[=:]["\']?([^"\'\s]+)',
+            'credit_card': r'\b(?:\d[ -]*?){13,16}\b',
+            'jwt_token': r'eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9._-]*\.[A-Za-z0-9._-]*',
+            'aws_access_key': r'AKIA[0-9A-Z]{16}',
+            'private_key': r'-----BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY-----',
+            'oauth_token': r'ya29\.[A-Za-z0-9_-]+',
+            'basic_auth': r'Authorization:\s*Basic\s+([A-Za-z0-9+/=]+)',
+            'bearer_token': r'Bearer\s+([A-Za-z0-9._-]+)',
+            'database_url': r'(postgres|mysql|mongodb)://[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+@[a-zA-Z0-9.-]+:[0-9]+/[a-zA-Z0-9_-]+',
         }
+        
         try:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
