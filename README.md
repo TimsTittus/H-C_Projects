@@ -1,2 +1,2 @@
 # H-C_Projects
-I'm dumping my html &amp; css projects that i've done in my learning path.XD
+I'm dumping random projects that i'm doing throught my learning path.XD
